@@ -76,6 +76,14 @@ done
   fail "plugin menu kind runtime test timed out"
 }
 
+# The predicate case only exists while modelData delivers kinds as a QML
+# sequence. If a Qt release hands over a plain Array instead, say so rather
+# than pass without exercising it.
+if ! jq -e '.kindsIsSequence == true' "$result" >/dev/null; then
+  skip "modelData no longer delivers kinds as a QML sequence; sequence case not exercised"
+  exit 0
+fi
+
 if ! jq -e '.ok == true' "$result" >/dev/null; then
   jq . "$result" >&2
   fail "manifestHasKind recognizes kinds delivered as a QML sequence"
